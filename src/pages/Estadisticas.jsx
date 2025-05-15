@@ -7,8 +7,9 @@ import {
   Legend,
 } from "chart.js";
 import "../styles/Estadisticas.scss";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { Pie, Bar } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
+ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 function Estadisticas() {
   const [clientes, setClientes] = useState([]);
@@ -48,22 +49,6 @@ function Estadisticas() {
     });
   };
 
-  const pieData = {
-    labels: ["15 mb", "30 mb", "50 mb"],
-    datasets: [
-      {
-        label: "Clientes por Plan",
-        data: [
-          estadisticas.planes["15 mb"],
-          estadisticas.planes["30 mb"],
-          estadisticas.planes["50 mb"],
-        ],
-        backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384"],
-        borderWidth: 1,
-      },
-    ],
-  };
-
   return (
     <div className="estadisticas-container">
       <h1>📊 Estadísticas del Servicio</h1>
@@ -74,11 +59,15 @@ function Estadisticas() {
         <p>⚠️ Inactivos: {estadisticas.clientesInactivos}</p>
       </div>
 
-      <div className="estadisticas-card">
-        <h2>📡 Distribución de Planes</h2>
-        <div className="pie-chart-container">
+      <div className="estadisticas-graficos">
+        <div className="grafico">
+          <h3>📡 Distribución de Planes</h3>
           <Pie data={pieData} />
-        </div>        
+        </div>
+        <div className="grafico">
+          <h3>⚡ Activos / Inactivos</h3>
+          <Bar data={barData} />
+        </div>
       </div>
     </div>
   );
