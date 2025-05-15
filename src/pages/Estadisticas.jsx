@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
+import { Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import "../styles/Estadisticas.scss";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Estadisticas() {
   const [clientes, setClientes] = useState([]);
@@ -10,7 +19,6 @@ function Estadisticas() {
     planes: { "15 mb": 0, "30 mb": 0, "50 mb": 0 },
   });
 
-  // 📌 Cargar clientes desde la API
   useEffect(() => {
     fetch("http://localhost:5000/api/clientes")
       .then((res) => res.json())
@@ -21,12 +29,11 @@ function Estadisticas() {
       .catch((error) => console.error("Error al obtener clientes:", error));
   }, []);
 
-  // 📊 Calcular estadísticas
   const calcularEstadisticas = (clientes) => {
     const totalClientes = clientes.length;
     const clientesActivos = clientes.filter((c) => c.estado === "activo").length;
     const clientesInactivos = totalClientes - clientesActivos;
-    
+
     const planes = {
       "15 mb": clientes.filter((c) => c.plan === "15").length,
       "30 mb": clientes.filter((c) => c.plan === "30").length,
@@ -41,6 +48,22 @@ function Estadisticas() {
     });
   };
 
+  const pieData = {
+    labels: ["15 mb", "30 mb", "50 mb"],
+    datasets: [
+      {
+        label: "Clientes por Plan",
+        data: [
+          estadisticas.planes["15 mb"],
+          estadisticas.planes["30 mb"],
+          estadisticas.planes["50 mb"],
+        ],
+        backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <div className="estadisticas-container">
       <h1>📊 Estadísticas del Servicio</h1>
@@ -53,9 +76,9 @@ function Estadisticas() {
 
       <div className="estadisticas-card">
         <h2>📡 Distribución de Planes</h2>
-        <p>15 mb: {estadisticas.planes["15 mb"]} clientes</p>
-        <p>30 mb: {estadisticas.planes["30 mb"]} clientes</p>
-        <p>50 mb: {estadisticas.planes["50 mb"]} clientes</p>
+        <div className="pie-chart-container">
+          <Pie data={pieData} />
+        </div>        
       </div>
     </div>
   );
